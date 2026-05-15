@@ -86,11 +86,11 @@ export function Hero() {
           </h1>
           <div className="flex items-center justify-center gap-3 text-xl md:text-2xl">
             <span className="text-zinc-500 font-light">Shop</span>
-            <div className="relative h-8 w-36 md:w-44 overflow-hidden">
+            <div className="relative h-8 w-28 md:w-36 overflow-hidden flex items-center">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={titleNumber}
-                  className="absolute inset-0 flex items-center justify-start font-bold text-indigo-400"
+                  className="absolute font-bold text-indigo-400 whitespace-nowrap"
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -40, opacity: 0 }}
