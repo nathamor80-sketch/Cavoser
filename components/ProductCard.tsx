@@ -134,11 +134,17 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
           {/* Price */}
           <div className="mt-auto pt-1 flex items-end justify-between">
             <div>
-              <p className="text-xl font-black text-white">${product.price.toFixed(2)}</p>
-              {urgency.type === 'drop' && (
-                <p className="text-xs text-zinc-600 line-through">
-                  ${(product.price * (1 + urgency.value / 100)).toFixed(2)}
-                </p>
+              {product.price === 0 ? (
+                <p className="text-sm font-bold text-orange-400">Voir sur Amazon</p>
+              ) : (
+                <>
+                  <p className="text-xl font-black text-white">${product.price.toFixed(2)}</p>
+                  {urgency.type === 'drop' && (
+                    <p className="text-xs text-zinc-600 line-through">
+                      ${(product.price * (1 + urgency.value / 100)).toFixed(2)}
+                    </p>
+                  )}
+                </>
               )}
             </div>
             {product.shipping && (
@@ -150,8 +156,12 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
           </div>
 
           {/* CTA */}
-          <div className="w-full text-center text-xs font-semibold py-2.5 rounded-xl bg-indigo-600/15 text-indigo-300 border border-indigo-500/25 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-violet-600 group-hover:text-white group-hover:border-transparent transition-all duration-300">
-            View best price
+          <div className={`w-full text-center text-xs font-semibold py-2.5 rounded-xl transition-all duration-300 ${
+            product.source === 'amazon' && product.price === 0
+              ? 'bg-orange-500/15 text-orange-300 border border-orange-500/25 group-hover:bg-orange-500 group-hover:text-white group-hover:border-transparent'
+              : 'bg-indigo-600/15 text-indigo-300 border border-indigo-500/25 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-violet-600 group-hover:text-white group-hover:border-transparent'
+          }`}>
+            {product.source === 'amazon' && product.price === 0 ? 'Rechercher sur Amazon' : 'View best price'}
           </div>
         </div>
       </Link>

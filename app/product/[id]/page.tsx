@@ -332,18 +332,23 @@ function ProductDetailContent() {
               href={affiliateUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl shadow-lg shadow-indigo-500/25 relative overflow-hidden"
+              className={`flex items-center justify-center gap-2 w-full py-4 font-bold text-base rounded-xl shadow-lg relative overflow-hidden text-white ${
+                product.source === 'amazon'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
+                  : 'bg-gradient-to-r from-indigo-600 to-violet-600 shadow-indigo-500/25'
+              }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Shimmer effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                 animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' as const }}
               />
               <ExternalLink size={16} />
-              View best price on {SOURCE_LABELS[product.source]}
+              {product.source === 'amazon' && product.price === 0
+                ? 'Rechercher sur Amazon.fr'
+                : `View best price on ${SOURCE_LABELS[product.source]}`}
             </motion.a>
 
             <p className="text-xs text-zinc-700 text-center">
