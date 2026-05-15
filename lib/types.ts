@@ -11,6 +11,7 @@ export interface Product {
   rating?: number
   reviewCount?: number
   shipping?: string
+  description?: string
 }
 
 export interface SearchFilters {
