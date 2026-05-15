@@ -1,6 +1,6 @@
 // Replace these with your real affiliate IDs after registration
 const AFFILIATE_IDS = {
-  amazon: 'cavoser-21',      // Amazon Associates tag
+  amazon: 'cavoserboss-21',  // Amazon Associates tag
   ebay: 'cavoser',           // eBay Partner Network campaign ID
   aliexpress: 'YOUR_ALI_ID',   // AliExpress affiliate ID
   etsy: 'YOUR_ETSY_ID',        // Etsy affiliate ID
