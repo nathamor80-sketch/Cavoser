@@ -1,5 +1,5 @@
-﻿{
-  "name": "Cavoser",
+{
+  "name": "cavoser",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,9 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
-  },
-  "optionalDependencies": {
-    "@next/swc-win32-x64-msvc": "^16.2.6"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -19,6 +16,9 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "three": "^0.184.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^16.2.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
