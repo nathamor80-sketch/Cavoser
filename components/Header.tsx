@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -18,7 +18,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-800/60">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
         <Link href="/" className="text-xl font-black gradient-text shrink-0 tracking-tight">
-          UniMarket
+          Cavoser
         </Link>
         <form onSubmit={handleSearch} className="flex-1 max-w-2xl">
           <div className="search-glow flex items-center bg-zinc-900 border border-zinc-700/80 rounded-xl overflow-hidden">

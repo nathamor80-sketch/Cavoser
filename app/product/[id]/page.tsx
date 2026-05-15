@@ -253,7 +253,7 @@ function ProductDetailContent() {
             </a>
 
             <p className="text-xs text-zinc-700 text-center">
-              Affiliate link — UniMarket earns a commission at no extra cost to you.
+              Affiliate link — Cavoser earns a commission at no extra cost to you.
             </p>
           </div>
         </div>

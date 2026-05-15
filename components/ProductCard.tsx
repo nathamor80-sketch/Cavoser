@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Star, Truck, Trophy } from 'lucide-react'
 import { Product } from '@/lib/types'
 import { computeTrustScore, computeValueScore } from '@/lib/scoring'

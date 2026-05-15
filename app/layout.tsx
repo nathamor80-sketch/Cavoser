@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UniMarket — Search Everything, Everywhere",
+  title: "Cavoser — Search Everything, Everywhere",
   description: "Compare prices across Amazon, eBay, AliExpress and Etsy in one search.",
 };
 
