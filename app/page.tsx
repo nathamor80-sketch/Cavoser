@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Hero } from '@/components/ui/animated-hero'
 import {
   ShieldCheck, BarChart2, Globe, Zap, Search, ArrowRight,
-  Star, TrendingDown, Smartphone, Shirt, Home, Gamepad2,
+  Star, TrendingDown, Smartphone, Shirt, Home as HomeIcon, Gamepad2,
   Dumbbell, Camera, Trophy, Truck, CheckCircle
 } from 'lucide-react'
 
@@ -117,7 +117,7 @@ const STEPS = [
 const CATEGORIES = [
   { icon: Smartphone, label: 'Electronics',  query: 'electronics',   grad: 'from-blue-600/25 to-blue-900/10',    border: 'border-blue-500/25',    text: 'text-blue-400',    glow: 'shadow-blue-500/10'   },
   { icon: Shirt,      label: 'Fashion',       query: 'fashion',       grad: 'from-pink-600/25 to-pink-900/10',    border: 'border-pink-500/25',    text: 'text-pink-400',    glow: 'shadow-pink-500/10'   },
-  { icon: Home,       label: 'Home & Garden', query: 'home garden',   grad: 'from-amber-600/25 to-amber-900/10',  border: 'border-amber-500/25',   text: 'text-amber-400',   glow: 'shadow-amber-500/10'  },
+  { icon: HomeIcon,   label: 'Home & Garden', query: 'home garden',   grad: 'from-amber-600/25 to-amber-900/10',  border: 'border-amber-500/25',   text: 'text-amber-400',   glow: 'shadow-amber-500/10'  },
   { icon: Gamepad2,   label: 'Gaming',        query: 'gaming',        grad: 'from-violet-600/25 to-violet-900/10',border: 'border-violet-500/25',  text: 'text-violet-400',  glow: 'shadow-violet-500/10' },
   { icon: Dumbbell,   label: 'Sports',        query: 'sports fitness',grad: 'from-green-600/25 to-green-900/10',  border: 'border-green-500/25',   text: 'text-green-400',   glow: 'shadow-green-500/10'  },
   { icon: Camera,     label: 'Photography',   query: 'camera',        grad: 'from-red-600/25 to-red-900/10',      border: 'border-red-500/25',     text: 'text-red-400',     glow: 'shadow-red-500/10'    },
@@ -141,7 +141,7 @@ const TESTIMONIALS = [
 ]
 
 function fadeUp(delay = 0) {
-  return { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.55, delay, ease: 'easeOut' } }
+  return { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.55, delay, ease: 'easeOut' as const } }
 }
 
 export default function Home() {
