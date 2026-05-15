@@ -172,7 +172,16 @@ function ProductDetailContent() {
     .sort((a, b) => (valueScores.get(b.id)?.score || 0) - (valueScores.get(a.id)?.score || 0))
     .slice(0, 5)
 
-  const productImg = `https://picsum.photos/seed/${product.id.replace(/[^a-z0-9]/gi, '')}/600/600`
+  function getImageKeywords(title: string): string {
+    const stopWords = new Set(['the','a','an','and','or','for','in','on','at','to','of','with','by','from','up','is','it','its','as','be','this','that','was','are','has','have','had','but','not','all','new','top','best','rated','quality','pro','edition','see','results','search','meilleures','ventes','voir','sur'])
+    const words = title.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w)).slice(0, 3)
+    return words.length > 0 ? words.join(',') : 'product'
+  }
+  const keywords = getImageKeywords(product.title)
+  const seed = product.id.replace(/[^a-z0-9]/gi, '')
+  const productImg = product.image && !product.image.includes('picsum')
+    ? product.image
+    : `https://loremflickr.com/600/600/${encodeURIComponent(keywords)}?lock=${seed.charCodeAt(0) * 13 + (seed.charCodeAt(1) || 1)}`
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col">
