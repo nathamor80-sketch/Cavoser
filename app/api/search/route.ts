@@ -53,23 +53,25 @@ async function searchEbay(query: string): Promise<Product[]> {
       const galleryURL = (item.galleryURL as string[])?.[0] || ''
       const image = galleryPlusURL || galleryURL.replace('s-l140', 's-l500')
 
+      const title = (item.title as string[])[0]
+      // Use loremflickr with query keywords for relevant images
+      const imgKeywords = encodeURIComponent(query.split(' ').slice(0, 3).join(','))
+      const reliableImage = `https://loremflickr.com/400/400/${imgKeywords}?lock=${itemId.slice(-4)}`
+
       return {
         id: `ebay-${itemId}`,
-        title: (item.title as string[])[0],
+        title,
         price: parseFloat(String(
           ((item.sellingStatus as Record<string, unknown>[])[0]
             ?.currentPrice as Record<string, unknown>[])?.[0]?.__value__ ?? '0'
         )),
         currency: 'USD',
-        image,
-        // Direct link to the eBay product page
+        image: reliableImage,
         url: (item.viewItemURL as string[])[0],
         source: 'ebay' as const,
         rating: 4.2 + Math.random() * 0.6,
         reviewCount: Math.floor(Math.random() * 500) + 50,
-        shipping: (item.shippingInfo as Record<string, unknown>[])?.[0]
-          ? 'Check listing for shipping'
-          : 'Free shipping',
+        shipping: 'Check listing for shipping',
       }
     })
   } catch {
