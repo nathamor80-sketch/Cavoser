@@ -54,9 +54,11 @@ async function searchEbay(query: string): Promise<Product[]> {
       const image = galleryPlusURL || galleryURL.replace('s-l140', 's-l500')
 
       const title = (item.title as string[])[0]
-      // Use loremflickr with query keywords for relevant images
-      const imgKeywords = encodeURIComponent(query.split(' ').slice(0, 3).join(','))
-      const reliableImage = `https://loremflickr.com/400/400/${imgKeywords}?lock=${itemId.slice(-4)}`
+      // Use real eBay listing image, upgraded to higher resolution
+      const rawImage = (item.galleryURL as string[])?.[0] || ''
+      const realImage = rawImage
+        .replace('s-l140.jpg', 's-l500.jpg')
+        .replace('s-l140.webp', 's-l500.webp')
 
       return {
         id: `ebay-${itemId}`,
@@ -66,7 +68,7 @@ async function searchEbay(query: string): Promise<Product[]> {
             ?.currentPrice as Record<string, unknown>[])?.[0]?.__value__ ?? '0'
         )),
         currency: 'USD',
-        image: reliableImage,
+        image: realImage,
         url: (item.viewItemURL as string[])[0],
         source: 'ebay' as const,
         rating: 4.2 + Math.random() * 0.6,
