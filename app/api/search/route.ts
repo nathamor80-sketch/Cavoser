@@ -42,7 +42,7 @@ async function searchEbay(query: string): Promise<Product[]> {
       `&paginationInput.entriesPerPage=8` +
       `&outputSelector=GalleryInfo,ShippingInfo`
     console.log('[eBay] Fetching:', url.slice(0, 120))
-    const res = await fetch(url, { next: { revalidate: 60 } })
+    const res = await fetch(url, { next: { revalidate: 86400 } }) // cache 24h
     console.log('[eBay] Response status:', res.status)
     const data = await res.json()
     const ack = data?.findItemsByKeywordsResponse?.[0]?.ack?.[0]
