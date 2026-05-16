@@ -32,6 +32,7 @@ export async function GET() {
         url: items[0].viewItemURL?.[0],
       } : null,
       error: error || null,
+      rawResponse: data,
     })
   } catch (e) {
     return NextResponse.json({ error: String(e) })
