@@ -30,21 +30,26 @@ function buildDirectUrl(source: string, slug: string, query: string): string {
 // Real eBay API — returns actual images + direct product URLs
 async function searchEbay(query: string): Promise<Product[]> {
   const appId = process.env.EBAY_APP_ID
+  console.log('[eBay] EBAY_APP_ID present:', !!appId, '| value:', appId?.slice(0, 10) + '...')
   if (!appId) return []
   try {
-    const res = await fetch(
-      `https://svcs.ebay.com/services/search/FindingService/v1` +
+    const url = `https://svcs.ebay.com/services/search/FindingService/v1` +
       `?OPERATION-NAME=findItemsByKeywords` +
       `&SERVICE-VERSION=1.0.3` +
       `&SECURITY-APPNAME=${appId}` +
       `&RESPONSE-DATA-FORMAT=JSON` +
       `&keywords=${encodeURIComponent(query)}` +
       `&paginationInput.entriesPerPage=8` +
-      `&outputSelector=GalleryInfo,ShippingInfo`,
-      { next: { revalidate: 60 } }
-    )
+      `&outputSelector=GalleryInfo,ShippingInfo`
+    console.log('[eBay] Fetching:', url.slice(0, 120))
+    const res = await fetch(url, { next: { revalidate: 60 } })
+    console.log('[eBay] Response status:', res.status)
     const data = await res.json()
+    const ack = data?.findItemsByKeywordsResponse?.[0]?.ack?.[0]
+    const errorMessage = data?.findItemsByKeywordsResponse?.[0]?.errorMessage
+    console.log('[eBay] ack:', ack, '| error:', JSON.stringify(errorMessage))
     const items = data?.findItemsByKeywordsResponse?.[0]?.searchResult?.[0]?.item || []
+    console.log('[eBay] items found:', items.length)
 
     return items.map((item: Record<string, unknown[]>): Product => {
       const itemId = (item.itemId as string[])[0]
