@@ -47,10 +47,11 @@ function productImage(product: Product): string {
       (product.image.includes('ebayimg') || product.image.includes('ebay'))) {
     return product.image
   }
-  // Use Unsplash for clean product photos
+  // Use loremflickr for product photos
   const keywords = getImageKeywords(product.title)
   const seed = product.id.replace(/[^a-z0-9]/gi, '').slice(0, 8)
-  return `https://source.unsplash.com/400x400/?${encodeURIComponent(keywords)}&sig=${seed}`
+  const n = seed.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 9999
+  return `https://loremflickr.com/400/400/${encodeURIComponent(keywords)}?lock=${n}`
 }
 
 export default function ProductCard({ product, allProducts, query, index = 0 }: {
