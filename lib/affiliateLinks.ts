@@ -1,5 +1,6 @@
 const AFFILIATE_IDS = {
   amazon: 'cavoserboss-21',
+  ebay_campid: '5339153584',
   aliexpress: 'YOUR_ALI_ID',
 }
 
@@ -12,8 +13,8 @@ export function buildAffiliateUrl(originalUrl: string, source: string): string {
         return url.toString()
 
       case 'ebay':
-        // Direct link to the eBay product page — no broken rover
-        return originalUrl
+        // eBay Partner Network rover link with real campaign ID
+        return `https://rover.ebay.com/rover/1/709-53476-19255-0/1?ff3=4&pub=5575${AFFILIATE_IDS.ebay_campid}&toolid=10001&campid=${AFFILIATE_IDS.ebay_campid}&customid=cavoser&mpre=${encodeURIComponent(originalUrl)}`
 
       case 'aliexpress':
         url.searchParams.set('aff_fcid', AFFILIATE_IDS.aliexpress)
