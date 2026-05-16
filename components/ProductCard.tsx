@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { Star, Truck, Trophy, Flame, TrendingDown } from 'lucide-react'
+import { Star, Truck, Trophy, Flame, TrendingDown, ExternalLink } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Product } from '@/lib/types'
 import { computeTrustScore, computeValueScore } from '@/lib/scoring'
@@ -16,45 +15,49 @@ const SOURCE_LABELS: Record<string, string> = {
   amazon: 'Amazon', ebay: 'eBay', aliexpress: 'AliExpress', etsy: 'Etsy',
 }
 
-// Deterministic urgency signals based on product id (consistent per product)
+// Build affiliate-wrapped external URL
+function buildExternalUrl(product: Product): string {
+  const raw = product.url
+  if (!raw) return '#'
+
+  if (product.source === 'ebay') {
+    // eBay rover affiliate link → direct product page
+    return `https://rover.ebay.com/rover/1/709-53476-19255-0/1?ff3=4&pub=55755339153584&toolid=10001&campid=5339153584&customid=cavoser&mpre=${encodeURIComponent(raw)}`
+  }
+  // Amazon already has tag in URL from route.ts
+  // AliExpress / Etsy: direct link
+  return raw
+}
+
+// Urgency signals — deterministic per product id
 function getUrgencySignal(id: string): { type: 'stock' | 'views' | 'drop' | null; value: number } {
   const n = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
   const mod = n % 10
-  if (mod < 3) return { type: 'stock', value: (n % 5) + 2 }       // "Only X left"
-  if (mod < 6) return { type: 'views', value: (n % 40) + 15 }     // "X people viewing"
-  if (mod < 8) return { type: 'drop', value: (n % 20) + 8 }       // "Price drop X%"
+  if (mod < 3) return { type: 'stock', value: (n % 5) + 2 }
+  if (mod < 6) return { type: 'views', value: (n % 40) + 15 }
+  if (mod < 8) return { type: 'drop', value: (n % 20) + 8 }
   return { type: null, value: 0 }
 }
 
-// Extract meaningful keywords from product title for image search
-function getImageKeywords(title: string): string {
-  const stopWords = new Set(['the','a','an','and','or','for','in','on','at','to','of','with','by','from','up','is','it','its','as','be','this','that','was','are','has','have','had','but','not','all','new','top','best','rated','quality','pro','edition','see','results','search','meilleures','ventes','voir','sur','ships','china','wholesale','factory','direct','handmade','custom','vintage','collector'])
-  const words = title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !stopWords.has(w))
-    .slice(0, 2)
-  return words.length > 0 ? words.join(' ') : 'product'
-}
-
+// Best image available for a product
 function productImage(product: Product): string {
-  // Use product's own image if it's a real eBay image (not loremflickr/picsum)
-  if (product.image &&
-      product.image.startsWith('http') &&
-      !product.image.includes('picsum') &&
-      !product.image.includes('loremflickr') &&
-      (product.image.includes('ebayimg') || product.image.includes('ebay'))) {
+  // Real eBay images from ebayimg.com — use directly
+  if (
+    product.image &&
+    product.image.startsWith('http') &&
+    !product.image.includes('loremflickr') &&
+    !product.image.includes('picsum') &&
+    product.image.includes('ebayimg')
+  ) {
     return product.image
   }
-  // Use loremflickr for product photos
-  const keywords = getImageKeywords(product.title)
-  const seed = product.id.replace(/[^a-z0-9]/gi, '').slice(0, 8)
-  const n = seed.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 9999
-  return `https://loremflickr.com/400/400/${encodeURIComponent(keywords)}?lock=${n}`
+
+  // Reliable placeholder with consistent seed per product
+  const seed = product.id.replace(/[^a-z0-9]/gi, '').slice(0, 12) || 'product'
+  return `https://picsum.photos/seed/${seed}/400/400`
 }
 
-export default function ProductCard({ product, allProducts, query, index = 0 }: {
+export default function ProductCard({ product, allProducts, index = 0 }: {
   product: Product
   allProducts?: Product[]
   query?: string
@@ -64,17 +67,29 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
   const valueScores = allProducts ? computeValueScore(allProducts) : null
   const valueScore = valueScores?.get(product.id)
   const urgency = getUrgencySignal(product.id)
+  const externalUrl = buildExternalUrl(product)
 
-  const productUrl = `/product/${encodeURIComponent(product.id)}?data=${encodeURIComponent(JSON.stringify(product))}&q=${encodeURIComponent(query || '')}`
+  const isAmazon = product.source === 'amazon'
+  const ctaLabel = isAmazon && product.price === 0
+    ? 'Rechercher sur Amazon'
+    : product.source === 'ebay'
+    ? 'Voir sur eBay'
+    : product.source === 'aliexpress'
+    ? 'Voir sur AliExpress'
+    : product.source === 'etsy'
+    ? 'Voir sur Etsy'
+    : 'View best price'
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.06, ease: 'easeOut' }}
+      transition={{ duration: 0.35, delay: index * 0.06, ease: 'easeOut' as const }}
     >
-      <Link
-        href={productUrl}
+      <a
+        href={externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="group flex flex-col bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 rounded-2xl overflow-hidden relative transition-all duration-300 hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] hover:-translate-y-1"
       >
         {/* Best deal badge */}
@@ -90,17 +105,19 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
           <img
             src={productImage(product)}
             alt={product.title}
-            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-            style={{ '--tw-scale-x': '1', '--tw-scale-y': '1' } as React.CSSProperties}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              // Fallback if image fails
+              const seed = product.id.replace(/[^a-z0-9]/gi, '').slice(0, 12) || 'product'
+              ;(e.target as HTMLImageElement).src = `https://picsum.photos/seed/${seed}/400/400`
+            }}
           />
-          {/* Gradient overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           <span className={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full border backdrop-blur-sm ${SOURCE_BADGE[product.source]}`}>
             {SOURCE_LABELS[product.source]}
           </span>
 
-          {/* Urgency signal overlay */}
           {urgency.type === 'stock' && (
             <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-red-500/90 backdrop-blur-sm text-white text-xs font-semibold px-2 py-0.5 rounded-full">
               <Flame size={10} />
@@ -117,7 +134,6 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
 
         <div className="flex flex-col flex-1 p-3 gap-1.5">
 
-          {/* Viewing signal */}
           {urgency.type === 'views' && (
             <p className="text-xs text-amber-400/80 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block" />
@@ -129,7 +145,6 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
             {product.title}
           </h3>
 
-          {/* Stars */}
           {product.rating && (
             <div className="flex items-center gap-1">
               <div className="flex items-center gap-0.5">
@@ -142,7 +157,6 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
             </div>
           )}
 
-          {/* Trust + Q/P */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-xs px-1.5 py-0.5 rounded border ${trust.badgeColor}`}>
               {trust.badge} {trust.overall}/100
@@ -154,7 +168,6 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
             )}
           </div>
 
-          {/* Price */}
           <div className="mt-auto pt-1 flex items-end justify-between">
             <div>
               {product.price === 0 ? (
@@ -178,16 +191,16 @@ export default function ProductCard({ product, allProducts, query, index = 0 }: 
             )}
           </div>
 
-          {/* CTA */}
-          <div className={`w-full text-center text-xs font-semibold py-2.5 rounded-xl transition-all duration-300 ${
-            product.source === 'amazon' && product.price === 0
+          <div className={`w-full text-center text-xs font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 ${
+            isAmazon && product.price === 0
               ? 'bg-orange-500/15 text-orange-300 border border-orange-500/25 group-hover:bg-orange-500 group-hover:text-white group-hover:border-transparent'
               : 'bg-indigo-600/15 text-indigo-300 border border-indigo-500/25 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-violet-600 group-hover:text-white group-hover:border-transparent'
           }`}>
-            {product.source === 'amazon' && product.price === 0 ? 'Rechercher sur Amazon' : 'View best price'}
+            {ctaLabel}
+            <ExternalLink size={10} />
           </div>
         </div>
-      </Link>
+      </a>
     </motion.div>
   )
 }
