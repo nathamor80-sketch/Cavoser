@@ -28,25 +28,29 @@ function getUrgencySignal(id: string): { type: 'stock' | 'views' | 'drop' | null
 
 // Extract meaningful keywords from product title for image search
 function getImageKeywords(title: string): string {
-  const stopWords = new Set(['the','a','an','and','or','for','in','on','at','to','of','with','by','from','up','is','it','its','as','be','this','that','was','are','has','have','had','but','not','all','new','top','best','rated','quality','pro','edition','see','results','search','meilleures','ventes','voir','sur'])
+  const stopWords = new Set(['the','a','an','and','or','for','in','on','at','to','of','with','by','from','up','is','it','its','as','be','this','that','was','are','has','have','had','but','not','all','new','top','best','rated','quality','pro','edition','see','results','search','meilleures','ventes','voir','sur','ships','china','wholesale','factory','direct','handmade','custom','vintage','collector'])
   const words = title
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
     .filter(w => w.length > 2 && !stopWords.has(w))
-    .slice(0, 3)
-  return words.length > 0 ? words.join(',') : 'product'
+    .slice(0, 2)
+  return words.length > 0 ? words.join(' ') : 'product'
 }
 
 function productImage(product: Product): string {
-  // Use product's own image if available and valid
-  if (product.image && product.image.startsWith('http') && !product.image.includes('picsum')) {
+  // Use product's own image if it's a real eBay image (not loremflickr/picsum)
+  if (product.image &&
+      product.image.startsWith('http') &&
+      !product.image.includes('picsum') &&
+      !product.image.includes('loremflickr') &&
+      (product.image.includes('ebayimg') || product.image.includes('ebay'))) {
     return product.image
   }
+  // Use Unsplash for clean product photos
   const keywords = getImageKeywords(product.title)
-  // Use loremflickr for keyword-based real photos (free, no API key needed)
-  const seed = product.id.replace(/[^a-z0-9]/gi, '')
-  return `https://loremflickr.com/400/400/${encodeURIComponent(keywords)}?lock=${seed.charCodeAt(0) * 13 + seed.charCodeAt(1)}`
+  const seed = product.id.replace(/[^a-z0-9]/gi, '').slice(0, 8)
+  return `https://source.unsplash.com/400x400/?${encodeURIComponent(keywords)}&sig=${seed}`
 }
 
 export default function ProductCard({ product, allProducts, query, index = 0 }: {

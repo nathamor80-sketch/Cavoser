@@ -95,8 +95,8 @@ async function generateAIProducts(query: string, sources: string[]): Promise<Pro
         const seed = Math.abs(id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % 9999
         const keywords = p.imageKeywords || query
 
-        // High quality product image from loremflickr with specific keywords
-        const image = `https://loremflickr.com/400/400/${encodeURIComponent(keywords)}?lock=${seed}`
+        // High quality product image from Unsplash with specific keywords
+        const image = `https://source.unsplash.com/400x400/?${encodeURIComponent(keywords)}&sig=${seed}`
 
         return {
           id,
